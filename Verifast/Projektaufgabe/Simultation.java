@@ -12,6 +12,14 @@ enum Ampelstatus{
 
 class Ampel{
 	private Ampelstatu status;
+	
+	public void changeStatus(Ampelstatus status){
+		
+	}
+	
+	public Ampelstatus getStatus(){
+		return this.status;
+	}
 }
 
 
