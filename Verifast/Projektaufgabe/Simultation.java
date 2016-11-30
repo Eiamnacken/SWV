@@ -32,17 +32,43 @@ enum Ampelstatus{
 }
 
 class Ampel{
-	private Ampelstatu status;
+
+	private Ampelstatus status;
+	private boolean gehtHoch;
 	
 	
-	
-	public void changeStatus(Ampelstatus status){
+	public Ampel(Ampelstatus status, boolean gehtHoch){
+		this.status = status;
+		this.gehtHoch = gehtHoch;
 		
+	}
+	
+	public void changeStatus(){
+	
+		switch (status) {
+		case GRUEN:
+			this.status = GELB;
+			this.gehtHoch = true;
+			break;
+		case GELB:
+			if(gehtHoch == true){
+			this.status = ROT;
+			}else{
+			this.status = GRUEN;
+			}
+			break;
+		case ROT:
+			this.satus = GELB;
+			this.gehtHoch = false;
+			break;	
+		}
 	}
 	
 	public Ampelstatus getStatus(){
 		return this.status;
 	}
+	
+	
 }
 
 class Strasse{
