@@ -88,13 +88,34 @@ class Ampel{
 }
 
 class Strasse{
-
-}
-
-
-class Kreuzung{
-	List<Auto> autos;
+	private <Auto> autos;
+	private Richtung position;
+	private Ampel ampel;
 	
+	public Strasse(Richtung position,Ampel ampel){
+		this.position=position;
+		this.ampel=ampel;
+		this.autos= new LinkedList<>();
+	}
+	
+	public void addAuto(){
+		Richtung[] autoRichtung = new Richtung(2);
+		switch(position){
+			case NORDEN:
+				
+			break;
+			case SUEDEN:
+			break;
+			case WESTEN:
+			break;
+			case OSTEN:
+			break;
+		 }
+	}
+	
+	public void tick(){
+		
+	}
 }
 
 class Simulation{
