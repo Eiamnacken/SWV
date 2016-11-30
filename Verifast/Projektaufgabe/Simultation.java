@@ -1,13 +1,24 @@
 class Auto{
 	
-	public void drive(){
-		
+	public Richtung position;
+	public Richtung richtung;
+	public void drive(Ampelstatus ampel){
+		if(ampel==Apelstatus.GRUEN){
+			this.position=richtung;
+		}	
+	}
+	public Richtung getPosition(){
+		return this.position
 	}
 	
-	public void checkAmpel(){
-	
+	public Richtung getRichtung(){
+		return this.richtung;
 	}
+}
 
+
+enum Richtung{
+	NORDEN,SUEDEN,OSTEN,WESTEN;	
 }
 
 enum Ampelstatus{
@@ -16,6 +27,8 @@ enum Ampelstatus{
 
 class Ampel{
 	private Ampelstatu status;
+	
+	
 	
 	public void changeStatus(Ampelstatus status){
 		
@@ -26,14 +39,17 @@ class Ampel{
 	}
 }
 
+class Strasse{
+
+}
+
 
 class Keuzung{
 	List<Auto> autos;
 	
-	
 }
 
-class Simulation{
+class Simuation{
 	
 	
 }
