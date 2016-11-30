@@ -1,11 +1,17 @@
 class Auto{
 	
-	
+	public void drive(){
+		
+	}
 
 }
 
+enum Ampelstatus{
+	ROT;GELB,GRUEN;
+}
+
 class Ampel{
-	
+	private Ampelstatu status;
 }
 
 
