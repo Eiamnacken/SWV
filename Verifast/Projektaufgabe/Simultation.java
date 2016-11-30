@@ -35,12 +35,13 @@ class Ampel{
 
 	private Ampelstatus status;
 	private boolean gehtHoch;
+	private int zaehler;
 	
 	
-	public Ampel(Ampelstatus status, boolean gehtHoch){
+	public Ampel(Ampelstatus status, boolean gehtHoch, int zaehler){
 		this.status = status;
 		this.gehtHoch = gehtHoch;
-		
+		this.zaehler = zaehler; 
 	}
 	
 	public void changeStatus(){
@@ -68,6 +69,15 @@ class Ampel{
 		return this.status;
 	}
 	
+	public void addZaehler(){
+		if(this.zaehler < 90){
+			this.zaehler++;
+		}else{
+			this.zaehler = 0;
+			changeStatus();
+		}
+	}
+	
 	
 }
 
@@ -76,12 +86,12 @@ class Strasse{
 }
 
 
-class Keuzung{
+class Kreuzung{
 	List<Auto> autos;
 	
 }
 
-class Simuation{
+class Simulation{
 	
 	
 }
