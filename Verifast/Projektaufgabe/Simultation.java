@@ -3,6 +3,10 @@ class Auto{
 	public void drive(){
 		
 	}
+	
+	public void checkAmpel(){
+	
+	}
 
 }
 
@@ -26,9 +30,10 @@ class Ampel{
 class Keuzung{
 	List<Auto> autos;
 	
+	
 }
 
-class Simuation{
+class Simulation{
 	
 	
 }
