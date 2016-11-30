@@ -2,6 +2,12 @@ class Auto{
 	
 	public Richtung position;
 	public Richtung richtung;
+	
+	public Auto(Richtung position,Richtung richtung){
+		this.position=position;
+		this.richtung=richtung;
+	}
+	
 	public void drive(Ampelstatus ampel){
 		if(ampel==Apelstatus.GRUEN){
 			this.position=richtung;
