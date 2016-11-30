@@ -81,7 +81,7 @@ class Keuzung{
 	
 }
 
-class Simuation{
+class Simulation{
 	
 	
 }
