@@ -1,11 +1,11 @@
-import java.util.List;
+import java.util.Random;
 
-import ampel.Ampelstatus;
-import ampel.Auto;
-import ampel.Richtung;
+
 
 class Auto{
-	
+	/**
+	 * 
+	 */
 	public Richtung position;
 	public Richtung richtung;
 	
@@ -26,6 +26,13 @@ class Auto{
 	public Richtung getRichtung(){
 		return this.richtung;
 	}
+
+	@Override
+	public String toString() {
+		return "Auto [position=" + position + ", richtung=" + richtung + "]";
+	}
+	
+	
 }
 
 
@@ -52,8 +59,8 @@ class Ampel{
 	
 	public void changeStatus(){
 	
-		switch (status) {
-		case GRUEN:
+		switch (this.status) {
+		case GRUEN :
 			this.status = Ampelstatus.GELB;
 			this.gehtHoch = true;
 			break;
@@ -76,50 +83,104 @@ class Ampel{
 	}
 	
 	public void addZaehler(){
-		if(this.zaehler < 90){
+		if(this.zaehler < 3){
 			this.zaehler++;
 		}else{
 			this.zaehler = 0;
 			changeStatus();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Ampel [status=" + status + ", gehtHoch=" + gehtHoch + ", zaehler=" + zaehler + "]";
+	}
+	
 	
 	
 }
 
 class Strasse{
-	private <Auto> autos;
+	private Auto auto;
 	private Richtung position;
 	private Ampel ampel;
 	
 	public Strasse(Richtung position,Ampel ampel){
 		this.position=position;
 		this.ampel=ampel;
-		this.autos= new LinkedList<>();
 	}
 	
-	public void addAuto(){
-		Richtung[] autoRichtung = new Richtung(2);
+	private void addAuto(){
+		Richtung[] autoRichtung = new Richtung[2];
+		
 		switch(position){
 			case NORDEN:
-				
+				autoRichtung[0]=Richtung.SUEDEN;
+				autoRichtung[1]=Richtung.WESTEN;
 			break;
 			case SUEDEN:
+				autoRichtung[0]=Richtung.NORDEN;
+				autoRichtung[1]=Richtung.OSTEN;
 			break;
 			case WESTEN:
+				autoRichtung[0]=Richtung.SUEDEN;
+				autoRichtung[1]=Richtung.OSTEN;
 			break;
 			case OSTEN:
+				autoRichtung[0]=Richtung.WESTEN;
+				autoRichtung[1]=Richtung.NORDEN;
 			break;
 		 }
+		Auto auto = new Auto(this.position, autoRichtung[new Random().nextInt(1)]);
+		this.auto=auto;
 	}
 	
 	public void tick(){
-		
+		if(this.auto==null){
+			this.addAuto();
+		}else if(this.auto.getPosition()!=this.position){
+			this.addAuto();
+		}
+		this.ampel.addZaehler();
+		System.out.println(this.toString());
 	}
+
+	@Override
+	public String toString() {
+		return "Strasse [auto=" + this.auto.toString() + ", position=" + position + ", ampel=" + ampel.toString() + "]";
+	}
+	
+	
 }
 
 class Simulation{
+	private Strasse[] strassen;
+	public Simulation() {
+		super();
+		this.strassen = new Strasse[4];
+		
+	}
 	
+	public void init() {
+		Ampel ampel = new Ampel(Ampelstatus.GRUEN, true, 0);
+		Ampel ampel2 = new Ampel(Ampelstatus.GRUEN, true, 0);
+		Ampel ampel3 = new Ampel(Ampelstatus.ROT, false, 0);
+		Ampel ampel4 = new Ampel(Ampelstatus.ROT, false, 0);
+		strassen[1] = new Strasse(Richtung.NORDEN, ampel2);
+		strassen[3] = new Strasse(Richtung.OSTEN, ampel4);
+		strassen[0] = new Strasse(Richtung.SUEDEN, ampel);
+		strassen[2] = new Strasse(Richtung.WESTEN, ampel3);
+	}
 	
+	public void start() {
+		java.util.Scanner in = new java.util.Scanner(System.in);
+		String stop="";
+		while(!"stop".equals(stop)){
+			for(Strasse s : strassen){
+				s.tick();
+				stop = in.nextLine();
+			}
+		}
+	}
 }
 
