@@ -1,3 +1,9 @@
+import java.util.List;
+
+import ampel.Ampelstatus;
+import ampel.Auto;
+import ampel.Richtung;
+
 class Auto{
 	
 	public Richtung position;
@@ -9,12 +15,12 @@ class Auto{
 	}
 	
 	public void drive(Ampelstatus ampel){
-		if(ampel==Apelstatus.GRUEN){
+		if(ampel==Ampelstatus.GRUEN){
 			this.position=richtung;
 		}	
 	}
 	public Richtung getPosition(){
-		return this.position
+		return this.position;
 	}
 	
 	public Richtung getRichtung(){
@@ -28,7 +34,7 @@ enum Richtung{
 }
 
 enum Ampelstatus{
-	ROT;GELB,GRUEN;
+	ROT,GELB,GRUEN;
 }
 
 class Ampel{
@@ -48,18 +54,18 @@ class Ampel{
 	
 		switch (status) {
 		case GRUEN:
-			this.status = GELB;
+			this.status = Ampelstatus.GELB;
 			this.gehtHoch = true;
 			break;
 		case GELB:
 			if(gehtHoch == true){
-			this.status = ROT;
+			this.status = Ampelstatus.ROT;
 			}else{
-			this.status = GRUEN;
+			this.status = Ampelstatus.GRUEN;
 			}
 			break;
 		case ROT:
-			this.satus = GELB;
+			this.status = Ampelstatus.GELB;
 			this.gehtHoch = false;
 			break;	
 		}
