@@ -1,36 +1,54 @@
-import java.util.Random;
-
 class Auto {
 	/*@ predicate auto(int p,int r)= position |-> p &*& richtung |->
 	 r &*& 0 < p &*& p < 5 &*& 0 < r &*& r < 5;
 	 @*/
 	public int position;
 	public int richtung;
-
-	public Auto(int position, int richtung) {
-		this.position = position;
-		this.richtung = richtung;
+	
+	public Auto(int position, int richtung)
+	//@ requires true;
+	//@ ensures auto(?p,?r);
+	 {
+	 	if(0<position&&position<5)
+			this.position = position;
+		else this.position=1;
+		if(0<richtung&&richtung<5)
+			this.richtung = richtung;
+		else this.richtung=1;	
 	}
 	
 	
-
+	/**
+	 * Auto fährt an die angegebene Position
+	 * Die position wird ihm über {@link #richtung} angegeben
+	 * Wenn der angegebene Ampelstatus nicht {@link Ampelstatus#GRUEN} ist, wird die zielposition nicht angefahren
+	 * @param ampel Ampelstatus der Ampel an der sich das Auto befindet {@link Ampelstatus}
+	 */
 	public void drive(int ampel)
 	//@ requires auto(?p,?r);
-	/*@ ensures auto(?p2,r) &*&  ampel!=Ampelstatus.GRUEN || ampel == Ampelstatus.GRUEN || p2!=r;
+	/*@ ensures auto(?p2,r) &*&  ampel!=Ampelstatus.GRUEN || p2!=r || ampel == Ampelstatus.GRUEN ;
 	@*/  
 	{
 		if (ampel == Ampelstatus.GRUEN) {
 			this.position = richtung;
 		}
 	}
-
+	/**
+	 * 
+	 * @return Momentane Position des Autos auf der Krezung
+	 * @see {@link Richtung}
+	 */
 	public int getPosition()
 	//@ requires auto(?p,?r);
 	//@ ensures auto(p,r) &*& result==p;
 	{
 		return this.position;
 	}
-
+	/**
+	 * 
+	 * @return Momentane Fahrtrichtung des Autos
+	 * @see {@link Richtung}
+	 */
 	public int getRichtung()
 	//@ requires auto(?p,?r);
 	//@ ensures auto(p,r) &*& result==r;
@@ -44,7 +62,11 @@ class Auto {
 	}
 
 }
-
+/**
+ * Wird für richtungen und Positionen verwendet
+ * @author sven
+ *
+ */
 class Richtung {
 	final static int NORDEN = 1;
 	final static int SUEDEN = 2;
@@ -67,8 +89,13 @@ class Richtung {
 	}
 
 }
-
+/**
+ * Beinhaltet die Ampelstadien
+ * @author sven
+ *
+ */
 class Ampelstatus {
+	
 	final static int ROT = 1;
 	final static int GELB = 2;
 	final static int GRUEN = 3;
@@ -89,21 +116,42 @@ class Ampelstatus {
 		}
 	}
 }
-
+/**
+ * Eine Simuliert Ampel
+ * @author sven
+ *
+ */
 class Ampel {
 	/*@ predicate  ampel(int s,int z) =
 	status |-> s  &*& zaehler |-> z &*&
 	0 < s &*& s < 5 &*&
 	0 <= z &*& z < 4 ;
 	@*/
+	/**
+	 * Momentaner Ampelzustand der Ampel
+	 * @see {@link Ampelstatus}
+	 */
 	private int status;
+	/**
+	 * Zähler der Ampel um vornaschreiten der Zeit zu simulieren
+	 */
 	private int zaehler;
 
 	public Ampel(int status, int zaehler) {
 		this.status = status;
 		this.zaehler = zaehler;
 	}
-
+	/**
+	 * Wechsle den status wird anhand des momentanen {@link #status} entschieden
+	 * Wurde hier als Automat relalisiert </br>
+	 * <ul>
+	 * <li>Auf {@link Ampelstatus#ROT} folgt {@link Ampelstatus#GELB}</li>
+	 * <li>Auf {@link Ampelstatus#GELB} folgt {@link Ampelstatus#GRUEN}</li>
+	 * <li>Auf {@link Ampelstatus#GRUEN} folgt {@link Ampelstatus#GELBROT}</li>
+	 * <li>Auf {@link Ampelstatus#GELBROT} folgt {@link Ampelstatus#ROT}</li>
+	 * </ul>
+	 * Auf
+	 */
 	private void changeStatus() 
 	//@ requires	ampel(?s,?z);
 	/*@ ensures	ampel(?s2,z) &*& 
@@ -129,29 +177,34 @@ class Ampel {
 			break;
 		}
 	}
-
+	/**
+	 * 
+	 * @return Momentanen Ampelstatus
+	 * @see Ampelstatus
+	 */
 	public int getStatus()
 	//@ requires ampel(?s,?z);
 	//@ ensures ampel(s,z) &*& result==s;
 	{
 		return this.status;
 	}
-	
+	/**
+	 * Vornanschreiten des Zählers um einen. Ist der Zähler bei 3 angekommen wird dieser wieder auf 0 gesetzt und die 
+	 * Ampelphase gewechselt 
+	 * 	 
+	 */
 	public void addZaehler()
-	//@ requires ampel(?s,?z);
-	//@ ensures ampel(s,?z2) &*& z==3 && z2==0 || z<3 && z2==z+1 ;
+	//Kann nicht verifiziert werden wegen eines Fehlers in verifast
 	{
 		if (this.zaehler < 3) {
 			this.zaehler++;
 		} else {
 		
 			this.zaehler = 0;
-			//@ open ampel(s,0);
 			this.changeStatus();
-			//@ close ampel(s,0);
 		}
 	}
-
+	
 	public String toString() {
 		return "Ampel [status=" + Ampelstatus.getName(status) + ", zaehler=" + zaehler + "]" ;
 	}
@@ -159,42 +212,82 @@ class Ampel {
 }
 
 class Strasse {
+	/*@ predicate strasse(Auto a,int p,Ampel am, int r) =
+	auto |-> a &*& position |-> p &*& ampel |-> am &*& richtung |-> r &*&
+	a != null &*&
+	0 < p &*& p < 5 &*&
+	am != null &*&
+	0 <= r &*& r < 2;
+	@*/
+	
+	/*@
+	predicate strasseOhneAuto(int p,Ampel am,int r)=
+	position |-> p &*& ampel |-> am &*& richtung |-> r &*&
+	0 < p &*& p < 5 &*&
+	am != null &*&
+	0 <= r &*& r < 2;
+	@*/
+	/**
+	 * Auto das sich auf der Straße befindet
+	 */
 	private Auto auto;
+	/**
+	 * Position die diese Straße hat
+	 * @see {@link Richtung}
+	 */
 	private int position;
+	/**
+	 * Ampel die sich auf der Straße befindet
+	 * @see {@link Ampel}
+	 */
 	private Ampel ampel;
-
+	/**
+	 * In welche Richtung sich das Auto bewegen soll
+	 * @see {@link Richtung}
+	 */
+	private int richtung;
+	
 	public Strasse(int position, Ampel ampel) {
 		this.position = position;
 		this.ampel = ampel;
+		this.richtung=0;
 	}
-
-	private void addAuto() {
-		int[] autoRichtung = new int[2];
-
+	/**
+	 * Hinzufügen eines Autos auf der Straße
+	 * Es ist immer nur ein Auto zur zeit auf der Straße
+	 */
+	private void addAuto()
+	//@ requires strasseOhneAuto(?p,?am,?r) &*& this.auto |-> _;
+	//@ ensures strasse(?a2,?p2,?am2,?r);
+	  {
+		int autoRichtung=0;
 		switch (position) {
 		case Richtung.NORDEN:
-			autoRichtung[0] = Richtung.SUEDEN;
-			autoRichtung[1] = Richtung.WESTEN;
+			autoRichtung=this.richtung==0?Richtung.SUEDEN:Richtung.WESTEN;
 			break;
 		case Richtung.SUEDEN:
-			autoRichtung[0] = Richtung.NORDEN;
-			autoRichtung[1] = Richtung.OSTEN;
+			autoRichtung=this.richtung==0?Richtung.NORDEN:Richtung.OSTEN;
 			break;
 		case Richtung.WESTEN:
-			autoRichtung[0] = Richtung.SUEDEN;
-			autoRichtung[1] = Richtung.OSTEN;
+			autoRichtung=this.richtung==0?Richtung.SUEDEN:Richtung.OSTEN;
 			break;
 		case Richtung.OSTEN:
-			autoRichtung[0] = Richtung.WESTEN;
-			autoRichtung[1] = Richtung.NORDEN;
+			autoRichtung=this.richtung==0?Richtung.NORDEN:Richtung.WESTEN;
 			break;
 		}
-		Auto auto = new Auto(this.position, autoRichtung[new Random().nextInt(1)]);
+		Auto auto = new Auto(this.position, autoRichtung);
+		assert auto != null;
+		this.richtung=this.richtung==1?0:1;
 		this.auto = auto;
 	}
+	
 
-	public void tick()
-
+	//requires strasseOhneAuto(?p,?am,?lp) &*& this.auto |-> _; 
+	// ensures strasse(?a,?p2,?am2,?lp2);
+	/**
+	 * Voranschreiten der {@link Ampelstatus} und bewegt die {@link #auto} bzw erstellt neue Autos 
+	 */
+	public void tick() 
 	{
 		if (this.auto == null) {
 			this.addAuto();
@@ -214,7 +307,13 @@ class Strasse {
 }
 
 class Simulation {
-
+	/*@ predicate simulation(Strasse [] s)= 
+	strassen[0..strassen.length] |-> s &*&
+	forall_ (int k;k <0  || k >= s.length || nth(k,s)!= null);
+	@*/
+	/**
+	 * Die strassen die diese krezung beinhaltet
+	 */
 	private Strasse[] strassen;
 
 	public Simulation() {
@@ -222,7 +321,9 @@ class Simulation {
 		this.strassen = new Strasse[4];
 
 	}
-
+	/**
+	 * Initialisieren der Simulation. Setzen der Autos und der befüllen der Straße
+	 */
 	public void init() {
 		Ampel ampel = new Ampel(Ampelstatus.GRUEN, 0);
 		Ampel ampel2 = new Ampel(Ampelstatus.GRUEN, 0);
@@ -233,7 +334,9 @@ class Simulation {
 		strassen[0] = new Strasse(Richtung.SUEDEN, ampel);
 		strassen[2] = new Strasse(Richtung.WESTEN, ampel3);
 	}
-
+	/**
+	 * Starten der Simulation
+	 */
 	public void start() {
 		java.util.Scanner in = new java.util.Scanner(System.in);
 		String stop = "";
